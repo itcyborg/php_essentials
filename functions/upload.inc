@@ -235,7 +235,3 @@ class Upload
         return $this->ext;
     }
 }
-
-class UploadException extends Exception
-{
-}
