@@ -14,10 +14,11 @@ try {
     //pass the file variable ($_FILES['file'])
     $upload->setFile($_FILES['file']);
 
-    //set a list of allowed file types
+    //set a list of allowed file types(optional)
     $upload->setAllowed(array('pdf', 'txt'));
 
-    $upload->setMaxSize(2048);
+    //set the maximum file size allowed in bytes(optional)
+    $upload->setMaxSize(1000000);
 
     //finish the configurations
     $upload->setAll();
@@ -33,6 +34,11 @@ try {
 
     //upload the file
     $upload->up();
+
+    //get the url of the file after a successful file upload
+    echo $upload->getFilename() . "<br>";
+
+    //get the response
     echo $upload->getMsg();
 } catch (UploadException $e) {
     die($e);

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uploads</title>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/user.css">
+</head>
+
+<body>
+<header>
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="navbar-header"><a class="navbar-brand navbar-link" href="#"><i
+                    class="glyphicon glyphicon-camera"></i><span class="text-title">ITCYBORG SOLUTIONS</span></a>
+                <button class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navcol-1"><span
+                        class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span
+                        class="icon-bar"></span><span class="icon-bar"></span></button>
+            </div>
+        </div>
+    </nav>
+</header>
+<div class="container post">
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h1>PHP ESSENTIALS</h1>
+        </div>
+        <hr role="separator">
+        <br>
+        <ul class="nav nav-pills nav-stacked categories">
+            <li class="active"><a href="#download.html">Download </a></li>
+            <li><a href="#">Github </a></li>
+        </ul>
+        <div class="col-md-12">
+            <p class="lead text-center text-success"><b>How to use</b></p>
+            <p>Php</p>
+            <pre class="text-primary bg-success">
+                //add the class
+                require_once "upload.inc";
+                //create a new instance of the class
+                $upload = new Upload();
+                try {
+                    //pass the file variable ($_FILES['file'])
+                    $upload->setFile($_FILES['file']);
+
+                    //set a list of allowed file types(optional)
+                    $upload->setAllowed(array('pdf', 'txt'));
+
+                    //set the maximum file size allowed in bytes(optional)
+                    $upload->setMaxSize(1000000);
+
+                    //finish the configurations
+                    $upload->setAll();
+
+                    //get the file size(optional)
+                    $upload->getSize();
+
+                    //get the file extension(optional)
+                    $upload->getExt();
+
+                    //get status message: errors and status(optional)
+                    $upload->getMsg();
+
+                    //upload the file
+                    $upload->up();
+
+                    //get the url of the file after a successful file upload(optional)
+                    echo  $upload->getFilename();
+
+                    //get the response(optional)
+                    echo $upload->getMsg();
+                } catch (UploadException $e) {
+                    //print the error and stop
+                    die($e);
+                }
+            </pre>
+        </div>
+    </div>
+</div>
+<footer>
+    <h5>itcyborg solutions © 2017</h5></footer>
+<script src="assets/js/jquery.min.js"></script>
+<script src="assets/bootstrap/js/bootstrap.min.js"></script>
+</body>
+
+</html>

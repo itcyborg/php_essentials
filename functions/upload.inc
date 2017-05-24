@@ -18,6 +18,8 @@ class Upload
 
     protected $size;
 
+    protected $filename;
+
     protected $errors;
 
     protected $maxSize;
@@ -45,6 +47,7 @@ class Upload
         $this->ext=null;
         $this->allowed=array();
         $this->maxSize = 0;
+        $this->filename = null;
     }
 
     public function setAll(){
@@ -63,11 +66,11 @@ class Upload
             if ($this->tmp_file !== "" && $this->tmp_file !== null) {
                 $this->size = filesize($this->tmp_file);
                 $this->type = mime_content_type($this->tmp_file);
-
             } else {
                 #throw error
                 $this->errors = true;
                 $this->msg = "An error has occured";
+                throw new UploadException($this->msg);
             }
 
             #check size
@@ -81,6 +84,7 @@ class Upload
 
             #check directory
             if(!file_exists($this->directory)){
+                #create the directory if not found
                 if (mkdir($this->directory)) {
                     $this->errors = false;
                     $this->msg = "Directory has been created successfully";
@@ -93,11 +97,15 @@ class Upload
             }
 
             #check if allowed
-            if (in_array($this->type, $this->allowed) || in_array($this->ext, $this->allowed)) {
-                $this->errors = false;
+            if (sizeof($this->allowed) > 0) {
+                if (in_array($this->type, $this->allowed) || in_array($this->ext, $this->allowed)) {
+                    $this->errors = false;
+                } else {
+                    $this->errors = true;
+                    throw new UploadException("Not allowed");
+                }
             } else {
-                $this->errors = true;
-                throw new UploadException("Not allowed");
+                #accept all files
             }
         } else {
             $this->errors = true;
@@ -109,6 +117,7 @@ class Upload
     public function up()
     {
         if(move_uploaded_file($this->tmp_file, $this->directory.$this->name)){
+            $this->setFilename($this->directory . $this->name);
             $this->msg="success";
             $this->errors = false;
         }else{
@@ -118,10 +127,17 @@ class Upload
         }
     }
 
-
     /**
      * setters
      */
+
+    /**
+     * @param null $filename
+     */
+    private function setFilename($filename)
+    {
+        $this->filename = $filename;
+    }
     /**
      * @param mixed $maxSize
      */
@@ -180,6 +196,14 @@ class Upload
     }
 
     /**
+     * @return null
+     */
+    public function getFilename()
+    {
+        return $this->filename;
+    }
+
+    /**
      * @return int
      */
     public function getSize(): int
@@ -214,5 +238,4 @@ class Upload
 
 class UploadException extends Exception
 {
-
 }
