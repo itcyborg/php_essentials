@@ -23,6 +23,7 @@ class Db_connector
     private $create;
     private $query;
     private $condition;
+    private $connection;
 
 
     /**
@@ -31,7 +32,8 @@ class Db_connector
     public function __construct()
     {
         $this->table = "";
-        $this->details = null;
+        $this->details = array();
+        $this->connection = null;
         $this->msg = null;
         $this->error = false;
         $this->columns = array();
@@ -60,13 +62,11 @@ class Db_connector
     }
 
     /**
-     * @param null $details
-     * @return Db_connector
+     * @param array $details
      */
-    public function setDetails($details)
+    public function setDetails(array $details)
     {
         $this->details = $details;
-        return $this;
     }
 
     /**
@@ -149,6 +149,7 @@ class Db_connector
      */
     public function getConnectionInfo()
     {
+        $this->connection_info = $this->connection;
         return $this->connection_info;
     }
 
@@ -160,7 +161,38 @@ class Db_connector
         return $this->query;
     }
 
-    public function construct()
+    /**
+     * @param null $connection
+     */
+    public function setConnection($connection)
+    {
+        $this->connection = $connection;
+    }
+
+    public function exec()
+    {
+        $this->construct();
+        try {
+            $result = $this->connection->query($this->query);
+            $this->msg = "Success";
+            $this->error = false;
+            if ($this->select) {
+                if ($result->rowCount() > 0) {
+                    return array('count' => $result->rowCount(), 'result' => $result->fetchAll(PDO::FETCH_OBJ));
+                } else {
+                    return array('count' => 0, 'result' => null);
+                }
+            } else {
+                return true;
+            }
+        } catch (PDOException $e) {
+            $this->msg = $e->getMessage();
+            $this->error = true;
+            return false;
+        }
+    }
+
+    private function construct()
     {
         if ($this->table !== null && $this->table !== "") {
             if (sizeof($this->data) > 0) {
@@ -181,8 +213,30 @@ class Db_connector
         }
     }
 
-    function set()
+    private function set()
     {
+        #connect to the database
+        if (sizeof($this->details) > 0) {
+            $host = $this->details['host'];
+            $dbname = $this->details['dbname'];
+            $this->msg = $dbname;
+            $dbuser = $this->details['dbuser'];
+            $dbpass = $this->details['dbpass'];
+            $dbport = $this->details['port'];
+            $report = $this->details['showerrors'];
+            $options = null;
+            if ($report) {
+                $options = array(PDO::ATTR_EMULATE_PREPARES => true, PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, INFO_GENERAL);
+            }
+            try {
+                $this->connection = new PDO("mysql:host=$host;dbname=$dbname", $dbuser, $dbpass, $options);
+            } catch (PDOException $e) {
+                die($e);
+            }
+        } else {
+            #throw an error
+            $this->msg = "Error";
+        }
         #insert query
         if ($this->insert) {
             $fields = "";
@@ -240,4 +294,5 @@ class Db_connector
             $this->query = $query;
         }
     }
+
 }
