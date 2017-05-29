@@ -7,7 +7,7 @@
  */
 
 //add the class
-require_once "upload.inc";
+require_once "autoload.php";
 //create a new instance of the class
 $upload = new Upload();
 try {
@@ -15,10 +15,10 @@ try {
     $upload->setFile($_FILES['file']);
 
     //set a list of allowed file types(optional)
-    $upload->setAllowed(array('pdf', 'txt'));
+    //$upload->setAllowed(array('pdf', 'txt'));
 
     //set the maximum file size allowed in bytes(optional)
-    $upload->setMaxSize(1000000);
+    $upload->setMaxSize(1000000000);
 
     //finish the configurations
     $upload->setAll();
@@ -37,10 +37,9 @@ try {
 
     //get the url of the file after a successful file upload
     echo $upload->getFilename() . "<br>";
-
     //get the response
     echo $upload->getMsg();
-} catch (UploadException $e) {
+} catch (pExceptions $e) {
     die($e);
 }
 

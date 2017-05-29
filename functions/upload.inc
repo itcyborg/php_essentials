@@ -70,7 +70,7 @@ class Upload
                 #throw error
                 $this->errors = true;
                 $this->msg = "An error has occured";
-                throw new UploadException($this->msg);
+                throw new pExceptions($this->msg);
             }
 
             #check size
@@ -78,7 +78,7 @@ class Upload
                 if ($this->maxSize < $this->size) {
                     $this->errors = true;
                     $this->msg = "File too big. Maximum file size allowed is " . $this->maxSize;
-                    throw new UploadException($this->msg);
+                    throw new pExceptions($this->msg);
                 }
             }
 
@@ -102,7 +102,7 @@ class Upload
                     $this->errors = false;
                 } else {
                     $this->errors = true;
-                    throw new UploadException("Not allowed");
+                    throw new pExceptions("Not allowed");
                 }
             } else {
                 #accept all files
@@ -110,7 +110,7 @@ class Upload
         } else {
             $this->errors = true;
             $this->msg = "No file has been selected for upload";
-            throw new UploadException($this->msg);
+            throw new pExceptions($this->msg);
         }
     }
 
@@ -123,7 +123,7 @@ class Upload
         }else{
             $this->msg="Failed";
             $this->errors = true;
-            throw new UploadException($this->msg);
+            throw new pExceptions($this->msg);
         }
     }
 
